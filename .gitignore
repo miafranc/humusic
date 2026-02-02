@@ -1,0 +1,4 @@
+data/lyrics_metadata_genres.json
+data/ovo.pickle
+.vscode/*
+__pycache__/*
