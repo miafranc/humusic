@@ -1,5 +1,6 @@
 data/lyrics_metadata_genres.json
 data/ovo.pickle
 data/complexity.json
+data/idf.json
 .vscode/*
 __pycache__/*

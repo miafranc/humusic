@@ -7,6 +7,7 @@ import json
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
 import matplotlib
+import re
 
 
 def set_seed(seed: int = 42) -> None:
@@ -30,6 +31,14 @@ def save_json(data, fname):
         json.dump(data, f, indent=2)
 
 
+def word_tokenizer(text, regex_split, lowercase=True):
+    if lowercase:
+        tokens = [str.lower(x) for x in re.findall(regex_split, text)]
+    else:
+        tokens = [x for x in re.findall(regex_split, text)]
+    return tokens
+
+
 def conf_matrix(M, labels, xlabel='', ylabel=''):
     disp = ConfusionMatrixDisplay(confusion_matrix=M, 
                                   display_labels=[labels[i] for i in range(len(labels))])
@@ -49,7 +58,7 @@ def load_stopwords(fname):
 
 def colors_from_values(values, palette_name):
     # cmap = cm.get_cmap(palette_name)
-    cmap = matplotlib.colormaps[palette_name]
+    cmap = matplotlib.colormaps[palette_name] # pyright: ignore[reportAttributeAccessIssue]
     normalized = (values - min(values)) / (max(values) - min(values))
     return np.array([cmap(v) for v in normalized])
 

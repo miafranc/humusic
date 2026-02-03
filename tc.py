@@ -26,19 +26,12 @@ from collections import Counter
 import argparse
 import pickle
 
-from utils import (load_json, load_stopwords, set_seed, conf_matrix)
+from utils import (load_json, load_stopwords, set_seed, conf_matrix,
+                   word_tokenizer)
 from settings import *
 
 
 RE_SPLIT_COMPILED = re.compile(RE_SPLIT, re.U)
-
-
-def word_tokenizer(text, lowercase=True):
-    if lowercase:
-        tokens = [str.lower(x) for x in re.findall(RE_SPLIT_COMPILED, text)]
-    else:
-        tokens = [x for x in re.findall(RE_SPLIT_COMPILED, text)]
-    return tokens
 
 
 def filter_genres(lyrics):
@@ -84,7 +77,7 @@ def stratified_multilabel_splits(data, n_splits=5):
             labels.append(g)
             indices.append(i)
 
-    splits = StratifiedKFold(n_splits=n_splits, shuffle=True).split(X=[0]*len(labels), y=labels)
+    splits = StratifiedKFold(n_splits=n_splits, shuffle=True).split(X=[0]*len(labels), y=labels) # pyright: ignore[reportArgumentType]
     splits_ok = []
     for s in splits:
         ss = []
@@ -116,7 +109,7 @@ def tc_multiclass():
 
     stopw = load_stopwords(STOPWORDS_PATH)
     
-    count_vectorizer = TfidfVectorizer(tokenizer=word_tokenizer, token_pattern=None, 
+    count_vectorizer = TfidfVectorizer(tokenizer=lambda w: word_tokenizer(w, RE_SPLIT_COMPILED), token_pattern=None,  # pyright: ignore[reportArgumentType]
                                        ngram_range=(NGRAM_MIN, NGRAM_MAX), stop_words=stopw, norm=None)
 
     train_X = count_vectorizer.fit_transform([d['title'] + ' ' + d['lyrics'] for d in data.values()])
@@ -168,7 +161,7 @@ def tc_one_vs_one():
         for j in range(i+1, len(gen)):
             y1, y2 = gen[i], gen[j]
             
-            count_vectorizer = TfidfVectorizer(tokenizer=word_tokenizer, token_pattern=None,
+            count_vectorizer = TfidfVectorizer(tokenizer=lambda w: word_tokenizer(w, RE_SPLIT_COMPILED), token_pattern=None, # pyright: ignore[reportArgumentType]
                                                binary=False, ngram_range=(NGRAM_MIN, NGRAM_MAX), stop_words=stopw)
 
             train_X = count_vectorizer.fit_transform([d['title'] + ' ' + d['lyrics'] for d in data.values()])
@@ -177,7 +170,7 @@ def tc_one_vs_one():
             c2 = get_2_classes([d['tags'] for d in data.values()], y1, y2)
             print(Counter([y1 if y1 in train_y[idx] else y2 for idx in c2]))
 
-            train_X = train_X[c2]
+            train_X = train_X[c2] # pyright: ignore[reportIndexIssue]
             train_y_2 = [1 if y1 in train_y[i] else -1 for i in c2]
             train_y = train_y_2
 
@@ -209,7 +202,7 @@ def tc_one_vs_one():
 
     # Hardcoded; used just for safety:
     with codecs.open('data/ovo.pickle', 'wb') as f:
-        pickle.dump(M, f)
+        pickle.dump(M, f) # pyright: ignore[reportArgumentType]
     
     conf_matrix(M, GENRES)
 

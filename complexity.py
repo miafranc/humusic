@@ -8,6 +8,7 @@ import matplotlib
 from tqdm import tqdm
 import numpy as np
 import re
+import argparse
 
 from utils import load_json, save_json, plot_bars, colors_from_values
 from settings import *
@@ -96,8 +97,22 @@ def complexity_plot_2(xlabel='', ylabel='', color='b'):
 
 
 if __name__ == '__main__':
-    # ctype = 'F-K'
-    ctype = 'gzip'
+    parser = argparse.ArgumentParser()
+    group1 = parser.add_mutually_exclusive_group()
+    group1.add_argument('--fk', required=False, action='store_true')
+    group1.add_argument('--gzip', required=False, action='store_true')
+    group2 = parser.add_mutually_exclusive_group()
+    group2.add_argument('--genres', required=False, action='store_true')
+    group2.add_argument('--playcount', required=False, action='store_true')
+
+    args = parser.parse_args()
+
+    ctype = 'fk'
+    if args.gzip:
+        ctype = 'gzip'
     complexity = calculate_complexity(ctype, True)
-    complexity_plot_1()
-    # complexity_plot_2(f'Complexity ({ctype})', 'Popularity (play count)')
+
+    if args.playcount:
+        complexity_plot_2(f'Complexity ({ctype})', 'Popularity (play count)')
+    else:
+        complexity_plot_1()
