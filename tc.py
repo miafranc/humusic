@@ -226,3 +226,6 @@ if __name__ == '__main__':
         tc_multiclass()
     elif args.ovo:
         tc_one_vs_one()
+    else:
+        print('No classification type selected.')
+        exit(1)

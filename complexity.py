@@ -110,9 +110,18 @@ if __name__ == '__main__':
     ctype = 'fk'
     if args.gzip:
         ctype = 'gzip'
+    elif args.fk:
+        ctype = 'fk'
+    else:
+        print('No complexity selected.')
+        exit(1)
+
     complexity = calculate_complexity(ctype, True)
 
     if args.playcount:
         complexity_plot_2(f'Complexity ({ctype})', 'Popularity (play count)')
-    else:
+    elif args.genres:
         complexity_plot_1()
+    else:
+        print('No plot type selected.')
+        exit(1)
