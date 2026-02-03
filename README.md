@@ -1,4 +1,4 @@
-# Hungarian popular music lyrics metadata
+# Hungarian popular music lyrics experiments
 
 ## Genre categorization with multinomial naive Bayes
 
