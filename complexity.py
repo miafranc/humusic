@@ -76,7 +76,7 @@ def complexity_plot_1():
     for c in comp_sorted[-10:]:
         print(c[0], c[1], lyrics[c[0]]['artist'], lyrics[c[0]]['title'], lyrics[c[0]]['tags'])
 
-    plot_bars({g:(np.mean(comp_values[g]), np.std(comp_values[g])) for g in GENRES}) 
+    plot_bars({g:(np.mean(comp_values[g]), np.std(comp_values[g])) for g in GENRES})
 
 
 def complexity_plot_2(xlabel='', ylabel='', color='b'):
