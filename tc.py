@@ -54,10 +54,12 @@ def filter_genres(lyrics):
     return lyrics_new
 
 
-def stratified_multilabel_splits(data, n_splits=5):
+def stratified_multilabel_splits(data, n_splits=5, disjunct=False):
     '''Performs a stratified k-fold split by taking into account all the labels
     of a sample, but afterwards leaving a sample (index) with multiple labels only once
-    in each fold. However, the same example can appear in multiple folds.
+    in each train or test set. The same index, however, can appear both in the train
+    and test set.
+    Setting disjunct to True, duplicates are removed from the test set.
 
     For example:
     >>> X = {
@@ -80,10 +82,11 @@ def stratified_multilabel_splits(data, n_splits=5):
     splits = StratifiedKFold(n_splits=n_splits, shuffle=True).split(X=[0]*len(labels), y=labels) # pyright: ignore[reportArgumentType]
     splits_ok = []
     for s in splits:
-        ss = []
-        for fold in s:
-            ss.append(list(set([indices[i] for i in fold])))
-        splits_ok.append(ss)
+        train = set([indices[i] for i in s[0]])
+        test = set([indices[i] for i in s[1]])
+        if disjunct:
+            test = test.difference(train)
+        splits_ok.append([list(train), list(test)])
 
     return splits_ok
 
@@ -122,12 +125,11 @@ def tc_multiclass():
     train_X = SelectPercentile(chi2, percentile=CHI2_PERCENTILE).fit_transform(train_X, train_y)
 
     clf = MultinomialNB()
-
     scoring_functions = [scoring_function_micro,
                          scoring_function_macro]
 
     scores = cross_validate(OneVsRestClassifier(clf), train_X, train_y, 
-                            cv=stratified_multilabel_splits(data, n_splits=N_SPLITS), 
+                            cv=stratified_multilabel_splits(data, n_splits=N_SPLITS, disjunct=False), 
                             scoring={sf.__name__:make_scorer(sf) for sf in scoring_functions}, 
                             return_train_score=False,
                             verbose=0,
