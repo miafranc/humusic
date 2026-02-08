@@ -5,6 +5,7 @@ import os
 import pandas as pd
 from collections import Counter
 import argparse
+from sklearn.metrics import f1_score
 
 from utils import load_json, save_json, word_tokenizer, plot_bars
 from settings import *
@@ -59,7 +60,7 @@ def get_polarity(text, pos_words, neg_words, idf=None):
     if idf != None:
         for w in words:
             idf_word = idf[w] if idf.get(w, -1) != -1 else 1
-            # idf_word = 1
+            # idf_word = idf[w] if idf.get(w, -1) != -1 else 0
             senti += idf_word if pos_words.get(w, -1) != -1 else 0
             senti -= idf_word if neg_words.get(w, -1) != -1 else 0
     else:
@@ -119,7 +120,8 @@ def load_husst():
 
 def validate(threshold=0, dataset='opinhubank'):
     pos_words, neg_words = pos_neg_words()
-    idf = idf_calculator(False)
+    # idf = idf_calculator(False)
+    idf = None
 
     data = []
     match dataset:
@@ -130,13 +132,18 @@ def validate(threshold=0, dataset='opinhubank'):
 
     data = [[d[0], 1 if d[1] >= 0 else -1] for d in data]
 
+    y_true = [d[1] for d in data]
+    y_pred = []
+
     acc = 0
     for d in data:
         p = 1 if get_polarity(d[0], pos_words, neg_words, idf) >= threshold else -1
         acc += (p == d[1])
+        y_pred.append(p)
     acc /= len(data)
 
     print(f'Accuracy: {acc:.4f}')
+    print(f'F1: {f1_score(y_true, y_pred, average="macro"):.4f}')
 
 
 if __name__ == '__main__':
