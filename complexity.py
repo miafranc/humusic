@@ -9,6 +9,8 @@ from tqdm import tqdm
 import numpy as np
 import re
 import argparse
+from textatistic import Textatistic
+import codecs
 
 from utils import load_json, save_json, plot_bars, colors_from_values
 from settings import *
@@ -96,7 +98,39 @@ def complexity_plot_2(xlabel='', ylabel='', color='b'):
     plt.show()
 
 
+def calculate_readability_correlation(dirname, rewrite=False):
+    path_complexities = 'data/fk_scores.json'
+
+    if os.path.exists(path_complexities) and not rewrite:
+        data = load_json(path_complexities)
+    else:
+        data = {}
+
+        for f in tqdm(os.listdir(os.path.join(dirname, 'english'))):
+            fname_en = os.path.join(dirname, 'english', f)
+            fname_hu = os.path.join(dirname, 'hungarian', f)[:-2] + 'hu'
+            with codecs.open(fname_en, 'r', encoding='iso-8859-2') as f_en:
+                en_text = f_en.read()
+            with codecs.open(fname_hu, 'r', encoding='iso-8859-2') as f_hu:
+                hu_text = f_hu.read()
+
+            s = Textatistic(en_text)
+            data[f] = {'en_fk': s.fleschkincaid_score,
+                       'hu_fk': flesch_kincaid(hu_text)}
+            
+        save_json(data, path_complexities)
+
+    s_en = [d['en_fk'] for d in data.values()]
+    s_hu = [d['hu_fk'] for d in data.values()]
+    r = np.corrcoef([s_en, s_hu])
+    print(f'Min, max: {np.min(s_en):.4f}, {np.max(s_en):.4f}')
+    print(f'Mean +/- std: {np.mean(s_en):.4f} +/- {np.std(s_en):.4f}')
+    print(f'Pearson correlation: {r}')
+
+
 if __name__ == '__main__':
+    # calculate_readability_correlation('data/parallel_kulon_fajlokban')
+    
     parser = argparse.ArgumentParser()
     group1 = parser.add_mutually_exclusive_group()
     group1.add_argument('--fk', required=False, action='store_true')
