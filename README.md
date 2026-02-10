@@ -1,8 +1,8 @@
 # Hungarian popular music lyrics experiments
 
-<center>
-<img src="artists.jpg" align="center" width="500"/>
-</center>
+<p align="center">
+    <img src="artists.jpg" align="center" width="500"/>
+</p>
 
 The repository contains the dataset (without the lyrics) and the  Python code of the experiments 
 described in the paper "...". 
