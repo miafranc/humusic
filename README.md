@@ -1,7 +1,16 @@
 # Hungarian popular music lyrics experiments
 
-## Genre categorization with multinomial naive Bayes
+<center>
+<img src="artists.jpg" align="center" width="500"/>
+</center>
 
+The repository contains the dataset (without the lyrics) and the  Python code of the experiments 
+described in the paper "...". 
+The programs can be run using command-line options as described below, covering the main experiments
+performed. The code is available for all experiments described in the paper (e.g., validation of
+the lexicon-based sentiment prediction method on two datasets), but can only be run from code.
+
+## Genre categorization with multinomial naive Bayes
 
 Multiclass and one-vs-one classification:
 ```
