@@ -10,6 +10,8 @@ The programs can be run using command-line options as described below, covering 
 performed. The code is available for all experiments described in the paper (e.g., validation of
 the lexicon-based sentiment prediction method on two datasets), but can only be run from code.
 
+The dataset is located in the `data` folder (the `lyrics` field contains only the first 30 characters of the song lyrics): <a href="data/lyrics_metadata_genres_public.json">lyrics_metadata_genres_public.json</a>.
+
 ## Genre categorization with multinomial naive Bayes
 
 Multiclass and one-vs-one classification:
